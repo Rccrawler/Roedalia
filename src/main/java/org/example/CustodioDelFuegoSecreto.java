@@ -66,6 +66,13 @@ public class CustodioDelFuegoSecreto {
         ElPortonNorteThread.start();
         LaTabernaThread.start();
 
+        try {
+            Thread.sleep(800); // Pausa el hilo actual por 3 segundos
+        } catch (InterruptedException e) {
+            System.err.println("El hilo fue interrumpido: " + e.getMessage());
+        }
+
+
         // iniciamos personajes
 
         for (int i = 0; i < alquimistas.length; i++) {

@@ -4,20 +4,38 @@ public class AlacenaPociones {
 
     // Clase compartida de los malvados alquimistas
 
-    private int pociones;
+    private int pocionesLance;
+    private int pocionesElisabetha;
 
     public AlacenaPociones(){
-        this.pociones = 1;
+        //this.pociones = 1;
+    }//synchronized
+
+    public synchronized int getPocionesLance() {
+        if (pocionesLance > 0){
+            this.pocionesLance = pocionesLance -1;
+            return pocionesLance+1;
+        }else {
+            return 0;
+        }
     }
 
-    public synchronized int MirarPociones(){
-        return pociones;
+    public synchronized void setPocionesLance() {
+        this.pocionesLance = pocionesLance +1;
     }
 
-    public synchronized void SumarPocion(){
-        this.pociones = (this.pociones + 1);
+    public synchronized int getPocionesElisabetha() {
+        if (pocionesElisabetha > 0){
+            this.pocionesElisabetha = pocionesElisabetha -1;
+            return pocionesElisabetha+1;
+        }else {
+            return 0;
+        }
     }
 
+    public synchronized void setPocionesElisabetha() {
+        this.pocionesElisabetha = pocionesElisabetha +1;
+    }
 }
 
 /*

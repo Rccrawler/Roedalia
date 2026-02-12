@@ -2,7 +2,6 @@ package org.example;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Random;
 
@@ -29,19 +28,45 @@ public class Alquimistas implements Runnable {
 
             int result = random.nextInt(100);
 
+            int estanteEli = 0;
+            int estanteLan = 0;
+
             Socket skCliente = null;
             DataOutputStream flujo_salida = null;
             DataInputStream flujo_entrada = null;
 
-            if (result <= 59) {
-                System.out.println(nombre + "Estudiar ");
-            } else if (result >= 60 || result <= 79) {
+            if (result <= 59) { // 60%
+                System.out.println(nombre + " Estudiar en sus calderos pociones mágicas para dañar la chispa de Elisabetha y Lance");
+                try {
+                    Thread.sleep(30000);
+                } catch (InterruptedException e) {
+                    System.err.println(nombre + " El hilo fue interrumpido: " + e.getMessage());
+                }
 
-            } else if (result >= 80 || result <= 99) {
+                result = random.nextInt(100);
 
+                if (result <= 29){ // 30%
+                    System.out.println(nombre + " obtuve una poción para bajar la chispa de Elisabetha");
+                    alacenaPociones.setPocionesElisabetha();
+                } else if (result >= 30 && result <= 59) { // 30%
+                    System.out.println(nombre + " obtube una poción que cree una excusa para citar a Lance");
+                    alacenaPociones.setPocionesLance();
+                } else if (result >= 60 && result <= 99) { // 40%
+                    System.out.println(nombre + " @3#~$=~·# no logre la poción");
+                }
+
+            } else if (result >= 60 && result <= 79) { // 20%
+                System.out.println(nombre + " Contactar con Elisabetha para proporcionarle una poción que haga descender su chispa");
+                estanteEli = alacenaPociones.getPocionesElisabetha();
+                if (estanteEli >= 1) {
+
+                } else {
+                    System.out.println(nombre + " Balla no puedo visitar a Elisabetha no me quedan pociones " + estanteEli);
+                }
+            } else if (result >= 80 && result <= 99) { // 20%
+                System.out.println(nombre + "Contactar con Lance para llamarlo al orden y amenazarle con enviarlo al Frente Norte");
             }
 
         }
     }
-
 }

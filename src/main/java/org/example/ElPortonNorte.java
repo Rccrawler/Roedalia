@@ -16,7 +16,7 @@ public class ElPortonNorte implements Runnable {
         ServerSocket skServidor = null;
 
         try {
-            skServidor = new ServerSocket(5000); //puertos apartir del 5000 son reserbados a programadores
+            skServidor = new ServerSocket(5001); //puertos apartir del 5000 son reserbados a programadores
         } catch (IOException e){
             System.out.println("Puerta del castillo atascada: error en el socket al iniciar");
             System.out.println(e.getMessage());
