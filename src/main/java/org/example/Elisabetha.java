@@ -6,6 +6,14 @@ public class Elisabetha implements Runnable {
 
     // hilo especial
 
+    // hojo los alquimistas piden esto Elisabetha lo atenderá justo
+    //después de terminar la acción que en ese momento esté realizando ya que es uno de
+    //los ratones más importantes del reino.
+
+    // por lo que eli despues de cada tarea se tendra que pasar al castillo por si a caso
+    // pero que se pase por el castillo no quiere decir que balla a tender a los demas que no sean los Alquimistas
+    // que si estan son los que tiene prioridad
+
     private int NivelDeChispa; // cuidado no se prenda fuego
     private boolean ConocioLance = false;
 
