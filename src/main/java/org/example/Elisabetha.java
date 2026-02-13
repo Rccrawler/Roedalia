@@ -14,6 +14,8 @@ public class Elisabetha implements Runnable {
     // pero que se pase por el castillo no quiere decir que balla a tender a los demas que no sean los Alquimistas
     // que si estan son los que tiene prioridad
 
+    // hay que hacer que elisabet como se ase desconecte del Mercado lla que pone que hay que desconectarse cuando acabe de comprar
+
     private int NivelDeChispa; // cuidado no se prenda fuego
     private boolean ConocioLance = false;
 

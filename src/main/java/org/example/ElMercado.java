@@ -49,7 +49,7 @@ public class ElMercado implements Runnable {
                 Socket skCliente;
                 skCliente = skServidor.accept();
 
-                InstanciaClienteMercado servidorHilo = new InstanciaClienteMercado(skCliente, LugaresMercado);
+                InstanciaClienteMercado servidorHilo = new InstanciaClienteMercado(skCliente, lugarMercado);
                 LugaresMercado[SalaDisponible] = new Thread(servidorHilo);
                 LugaresMercado[SalaDisponible].start();
 
