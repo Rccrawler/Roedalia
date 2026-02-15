@@ -34,16 +34,39 @@ public class CaballerosDelPortonNorte implements Runnable {
 
                     if (labor == 0){
                         lugar = "el Portón Norte";// Kurmin Jatau
+                        System.out.println(nombre + " vigilar " + lugar + "-------------------------------------------");
+
+
+                        try {
+
+                            skCliente = new Socket("localhost", 5001);
+                            flujo_salida = new DataOutputStream(skCliente.getOutputStream());
+                            flujo_entrada = new DataInputStream(skCliente.getInputStream());
+
+                            flujo_salida.writeUTF("caballero vigilante");
+                            flujo_salida.writeUTF(nombre);
+                            String detalle = flujo_entrada.readUTF();
+                            String resultado = flujo_entrada.readUTF();
+
+                            System.out.println(nombre + " " + detalle);
+                            System.out.println(nombre + " " + resultado);
+
+                        } catch (IOException e) {
+                            System.err.println(nombre + " No pude vigilar en el porton: " + e.getMessage());
+                        }
+
                     } else if (labor == 1) {
                         lugar = "la Muralla";
+                        System.out.println(nombre + " vigilar " + lugar);
                     } else if (labor == 2) {
                         lugar = "las Torres";
+                        System.out.println(nombre + " vigilar " + lugar);
                     }
 
                     System.out.println(nombre + " Realizare labores de vigilancia en " + lugar + " de la ciudad");
 
                     try {
-                        Thread.sleep(6000); // Pausa el hilo actual por 3 segundos
+                        Thread.sleep(6000); // Pausa el hilo actual por 6 segundos
                     } catch (InterruptedException e) {
                         System.err.println(nombre + " El hilo fue interrumpido: " + e.getMessage());
                     }

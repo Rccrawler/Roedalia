@@ -16,6 +16,8 @@ public class InstanciaClientePorton implements Runnable {
     @Override
     public void run() {
 
+        sala.lleganCarretas();
+
         try {
             InputStream get = this.socket.getInputStream(); // obtener mensajes
             DataInputStream flujo_entrada = new DataInputStream(get);
@@ -24,8 +26,10 @@ public class InstanciaClientePorton implements Runnable {
 
             String quienEs = flujo_entrada.readUTF();
 
-            if (quienEs.equals("Lance du Lac(Dion)")){
+            if (quienEs.equals("Lance du Lac(Dion)")) {
                 sala.notificarLlegada(flujo_salida, flujo_entrada);
+            } else if (quienEs.equals("caballero vigilante")) {
+                sala.hacerVigilancia(flujo_entrada, flujo_salida);
             } else {
                 sala.esperarlanceDuLacDion(flujo_salida, flujo_entrada);
             }
