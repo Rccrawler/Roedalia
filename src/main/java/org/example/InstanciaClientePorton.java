@@ -31,7 +31,7 @@ public class InstanciaClientePorton implements Runnable {
             } else if (quienEs.equals("caballero vigilante")) {
                 sala.hacerVigilancia(flujo_entrada, flujo_salida);
             } else {
-                sala.esperarlanceDuLacDion(flujo_salida, flujo_entrada);
+                sala.esperarlanceDuLacDion(flujo_salida, flujo_entrada, quienEs);
             }
 
             socket.close();

@@ -56,8 +56,10 @@ public class SalaDelPortonNorte {
 
 
 
-    public synchronized void esperarlanceDuLacDion(DataOutputStream salidaCaballero, DataInputStream entradaCaballero){
+    public synchronized void esperarlanceDuLacDion(DataOutputStream salidaCaballero, DataInputStream entradaCaballero, String quienBusacaa){
         try {
+            String nombre = quienBusacaa;
+
             if(this.lanceDuLacDionPresente){
                 salidaCaballero.writeUTF("lo encontre");
                 this.mensajeRumor = entradaCaballero.readUTF();

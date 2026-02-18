@@ -4,9 +4,36 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Random;
 
 public class CaballerosDelPortonNorte implements Runnable {
+
+    private static final Map<String, String> mensajesPendientes = new HashMap<>();
+    private static final Map<String, Resultado> resultados = new HashMap<>();
+
+    private static class Resultado {
+        final boolean duelo;
+        final boolean herido;
+        Resultado(boolean duelo, boolean herido) {
+            this.duelo = duelo;
+            this.herido = herido;
+        }
+    }
+
+    public static synchronized String consumirMensaje(String nombre) {
+        return mensajesPendientes.remove(nombre);
+    }
+
+    public static synchronized boolean hayMensaje(String nombre) {
+        return mensajesPendientes.containsKey(nombre);
+    }
+
+    public static synchronized void registrarResultado(String nombre, boolean duelo, boolean herido) {
+        resultados.put(nombre, new Resultado(duelo, herido));
+        CaballerosDelPortonNorte.class.notifyAll();
+    }
 
     Socket skCliente = null;
 
@@ -35,7 +62,6 @@ public class CaballerosDelPortonNorte implements Runnable {
                     if (labor == 0){
                         lugar = "el Portón Norte";// Kurmin Jatau
                         System.out.println(nombre + " vigilar " + lugar + "-------------------------------------------");
-
 
                         try {
 
@@ -75,80 +101,51 @@ public class CaballerosDelPortonNorte implements Runnable {
                 case 1:
                     System.out.println(nombre + " Ire a hablar con Lance");
 
-                    int esAttendido = 0;
-                    int contConsexionIntent = 0;
-                    int notificar = 1;
+                    try {
+                        int laborMensaje = random.nextInt(100); // del 0 al 99
+                        String mensaje;
+                        if (laborMensaje < 50) { // 50%
+                            mensaje = "confidencia personal";
+                        } else if (laborMensaje < 75) { // 25%
+                            mensaje = "rumor infundado";
+                        } else { // 25%
+                            mensaje = "ofensa sobre Elisabetha";
+                        }
 
-                    while (esAttendido == 0) { // esperamos a la conesion 20 segundos
-                        try {
-                            labor = random.nextInt(100); //del  0 al 99
-                            String mensaje = "";
-                            if(labor < 37){
-                                mensaje = "confidencia personal";
-                            }else if (labor < 75){
-                                mensaje = "rumor infundado";
-                            } else { // del 75 al 99 un 25/100 de probabilidad
-                                mensaje = "ofensa sobre Elisabetha";
+                        synchronized (CaballerosDelPortonNorte.class) {
+                            mensajesPendientes.put(nombre, mensaje);
+                            CaballerosDelPortonNorte.class.notifyAll();
+                        }
+                        System.out.println(nombre + " espera a Lance con: " + mensaje);
+
+                        Resultado resultado;
+                        long limite = System.currentTimeMillis() + 25000; // espera max 25s
+                        synchronized (CaballerosDelPortonNorte.class) {
+                            while (!resultados.containsKey(nombre) && System.currentTimeMillis() < limite) {
+                                CaballerosDelPortonNorte.class.wait(500);
                             }
+                            resultado = resultados.remove(nombre);
+                        }
 
-                            skCliente = new Socket("localhost", 5000);
-                            flujo_salida = new DataOutputStream(skCliente.getOutputStream());
-                            flujo_entrada = new DataInputStream(skCliente.getInputStream());
-
-                            flujo_salida.writeUTF(nombre);
-
-                            if (notificar == 1){
-                                System.out.println(nombre + " Esta en el porton norte"); // que solo se inprima una vez
-                                notificar = 0;
-                            }
-
-                            String esta = flujo_entrada.readUTF();
-
-                            if(esta.equals("la encontre")){
-                                System.out.println(nombre + "Boy a hablar con Lince Du Lac Dion");
-                                esAttendido = 1;
-                                flujo_salida.writeUTF(mensaje);
-
-                                // si es retado aun duelo
-                                if(mensaje.equals("ofensa sobre Elisabetha")){
-                                    String respuesta = flujo_entrada.readUTF(); // retado por lance
-                                    System.out.println(nombre + " " + respuesta); // mensaje de que es retado
-                                    int reflejos = random.nextInt(100); // quien mas reflejos tenga antes dara el golpe
-                                    int reflejos_rival = flujo_entrada.readInt();
-                                    flujo_salida.writeInt(reflejos);
-                                    if (reflejos < reflejos_rival){
-                                        System.out.println(nombre + " fue alcanzado por lanze con su lanza");
-                                        try {
-                                            Thread.sleep(30000); // 30 segundos = 30000 milisegundos
-                                        } catch (InterruptedException e) {
-                                            Thread.currentThread().interrupt();
-                                        }
-                                    } else {
-                                        System.out.println(nombre + " alcanzo a lanze con su lanza");
-                                    }
+                        if (resultado == null) {
+                            System.out.println(nombre + " se cansa de esperar a Lance.");
+                        } else if (resultado.duelo) {
+                            if (resultado.herido) {
+                                System.out.println(nombre + " ha quedado herido en el duelo contra Lance. Se recupera 30s.");
+                                try {
+                                    Thread.sleep(30000);
+                                } catch (InterruptedException e) {
+                                    Thread.currentThread().interrupt();
                                 }
+                            } else {
+                                System.out.println(nombre + " perdió el duelo con Lance sin heridas graves.");
                             }
+                        } else {
+                            System.out.println(nombre + " fue escuchado por Lance.");
+                        }
 
-                        } catch (IOException e){
-                            //System.out.println(nombre + " error en el socket");
-                            //System.out.println(e.getMessage());
-                            try {
-                                Thread.sleep(1000);
-                            } catch (InterruptedException o) {
-                                System.err.println(nombre + "El hilo fue interrumpido: " + e.getMessage());
-                            }
-                            contConsexionIntent = (contConsexionIntent+1);
-                        }
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            System.err.println(nombre + " El hilo fue interrumpido: " + e.getMessage());
-                        }
-                        contConsexionIntent = (contConsexionIntent+1);
-                        if (contConsexionIntent == 25){
-                            esAttendido = -1;
-                            System.out.println(nombre + " Pues no viene eli me voy a otra cosa");
-                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                     }
                     break;
             }
