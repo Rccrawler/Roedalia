@@ -55,13 +55,13 @@ public class CaballerosDelPortonNorte implements Runnable {
             DataOutputStream flujo_salida = null;
             DataInputStream flujo_entrada = null;
 
-            switch (labor){
+            switch (labor){ // labor
                 case 0:
                     labor = random.nextInt(3);
 
                     if (labor == 0){
                         lugar = "el Portón Norte";// Kurmin Jatau
-                        System.out.println(nombre + " vigilar " + lugar + "-------------------------------------------");
+                        System.out.println(nombre + " vigilar " + lugar);
 
                         try {
 

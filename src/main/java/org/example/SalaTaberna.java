@@ -10,13 +10,26 @@ public class SalaTaberna {
 
     private String mensaje = "";
 
-    public synchronized void esperarAelisabetha(DataOutputStream salidaDama, DataInputStream entradaDama){
+    public synchronized void esperarAelisabetha(DataOutputStream salidaEli, DataInputStream entradaEli){
 
 
     }
 
-    public synchronized void esperarLanze(DataOutputStream salidaElisabetha, DataInputStream entradaElisabetha){
+    public synchronized void esperarLanze(DataOutputStream salidaLan, DataInputStream entradaLan){
 
+        if (this.elisabethaPresente = true){
+            try {
+                salidaLan.writeUTF("true");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }else {
+            try {
+                salidaLan.writeUTF("false");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
     }
 

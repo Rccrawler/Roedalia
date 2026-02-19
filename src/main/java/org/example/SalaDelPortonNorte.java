@@ -102,9 +102,10 @@ public class SalaDelPortonNorte {
         }
     }
 
-    public void lleganCarretas(){
-        // que ballan llegando carretas desde que inicia el programa porque lla tiene que haber una fila antes de que llege el caballero
-        Random random = new Random();
+    public synchronized void lleganCarretas(){
+        // Sincronizado para evitar ConcurrentModificationException al crear la cola desde varios hilos
+         // que ballan llegando carretas desde que inicia el programa porque lla tiene que haber una fila antes de que llege el caballero
+         Random random = new Random();
 
         // Seleccionamos 3 nombres aleatorios para crear las carretas
         while (carretas.size() < 3) {

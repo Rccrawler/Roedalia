@@ -67,7 +67,7 @@ public class CustodioDelFuegoSecreto {
         LaTabernaThread.start();
 
         try {
-            Thread.sleep(800); // Pausa el hilo actual por 3 segundos
+            Thread.sleep(1200); // Pausa el hilo
         } catch (InterruptedException e) {
             System.err.println("El hilo fue interrumpido: " + e.getMessage());
         }
@@ -94,7 +94,14 @@ public class CustodioDelFuegoSecreto {
             CaballerosDelPortonNorte[i].start();
         }
 
+        try {
+            Thread.sleep(800); // Pausa el hilo
+        } catch (InterruptedException e) {
+            System.err.println("El hilo fue interrumpido: " + e.getMessage());
+        }
+
         elisabethaThread.start();
+        LinceDuLac_Dion_Thread.start();
 
     }
 
