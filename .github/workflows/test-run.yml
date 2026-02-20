@@ -1,0 +1,31 @@
+name: Test Run Roedalia
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run-simulation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Compilar con Maven
+        run: mvn compile -q
+
+      - name: Empaquetar con Maven
+        run: mvn package -DskipTests -q
+
+      - name: Ejecutar simulación durante 20 minutos
+        run: |
+          timeout 1200 mvn exec:java -Dexec.mainClass="org.example.CustodioDelFuegoSecreto" || true

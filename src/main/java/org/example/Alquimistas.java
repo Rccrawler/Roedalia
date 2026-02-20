@@ -108,61 +108,84 @@ public class Alquimistas implements Runnable {
 
                     result = random.nextInt(100);
 
-                    if (result >= 79){ //80%
+                    if (result >= 20){ //80% engañar a Lance
                         deciosion = "engañar a Lance";
                         System.out.println(nombre + " Decicio " + deciosion);
+                        boolean esperar = true;
 
-                        try {
-                            skCliente = new Socket("localhost", 5000);
-                            flujo_salida = new DataOutputStream(skCliente.getOutputStream());
-                            flujo_entrada = new DataInputStream(skCliente.getInputStream());
+                        while (esperar){
+                            try {
+                                skCliente = new Socket("localhost", 5000);
+                                flujo_salida = new DataOutputStream(skCliente.getOutputStream());
+                                flujo_entrada = new DataInputStream(skCliente.getInputStream());
 
-                            flujo_salida.writeUTF(nombre);
+                                flujo_salida.writeUTF(nombre);
 
-                            flujo_entrada.readUTF();
+                                String esta = flujo_entrada.readUTF();
+                                if (esta.equals("Lance") || esta.equals("Elisabetha y Lance")){
+                                    esperar = false;
+                                    result = random.nextInt(100);
+                                    if (result >= 20) {// 80%
+                                        flujo_salida.writeUTF("Te engañe");
+                                        System.out.println(nombre + " Nota mental: consegi engañar a Lance jaaaajjaja");
+                                    } else { // 20%
+                                        flujo_salida.writeUTF("no consegi engañarte");
+                                        System.out.println(nombre + " Nota mental: NO CONSEIGI ENGAÑARLO NOOO NOO LA @#~&% $$ #~$%@ $$ @##$$$@~&%");
+                                    }
+                                } else {
+                                    // Lance no está: cerramos el socket sin enviar nada y reintentamos
+                                    esperar = true;
+                                    System.out.println(nombre + " Lance no está en el castillo, reintentando...");
+                                    try { Thread.sleep(2000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                                }
+                                skCliente.close();
 
-                            result = random.nextInt(100);
-
-                            if (result >= 19) {// 20½
-                                flujo_salida.writeUTF("Te engañe");
-                                System.out.println(nombre + " Nota mental: consegi engañar a Lance jaaaajjaja");
-                            } else { // resto
-                                flujo_salida.writeUTF("no consegi engañarte");
-                                System.out.println(nombre + " Nota mental: NO CONSEIGI ENGAÑARLO NOOO NOO LA @#~&% $$ #~$%@ $$ @##$$$@~&%");
+                            } catch (IOException e){
+                                System.out.println(nombre + " error en el socket");
+                                System.out.println(e.getMessage());
                             }
-
-                        } catch (IOException e){
-                            System.out.println(nombre + " error en el socket");
-                            System.out.println(e.getMessage());
                         }
 
-                    } else if (result <= 80) { //20%
+                    } else { //20% amenazar a Lance
                         deciosion = "Amenazar a Lance";
                         System.out.println(nombre + " Decicio " + deciosion);
                         alacenaPociones.setPocionesLance();
+                        boolean esperar = true;
 
-                        try {
-                            skCliente = new Socket("localhost", 5000);
-                            flujo_salida = new DataOutputStream(skCliente.getOutputStream());
-                            flujo_entrada = new DataInputStream(skCliente.getInputStream());
+                        while (esperar) {
 
-                            flujo_salida.writeUTF(nombre);
+                            try {
+                                skCliente = new Socket("localhost", 5000);
+                                flujo_salida = new DataOutputStream(skCliente.getOutputStream());
+                                flujo_entrada = new DataInputStream(skCliente.getInputStream());
 
-                            flujo_entrada.readUTF();
+                                flujo_salida.writeUTF(nombre);
 
-                            result = random.nextInt(100);
+                                String esta = flujo_entrada.readUTF();
 
-                            if (result >= 19) {// 20½
-                                flujo_salida.writeUTF("vas a morir en el frente");
-                                System.out.println(nombre + " Nota mental: consegi engañar a Lance cree que ira al frente");
-                            } else { // resto
-                                flujo_salida.writeUTF("no consegi engañarte");
-                                System.out.println(nombre + " Nota mental: NO CONSEIGI ENGAÑARLO NOOO NOO LA @#~&% $$ #~$%@ $$ @##$$$@~&%");
+                                result = random.nextInt(100);
+
+                                if (esta.equals("Lance") || esta.equals("Elisabetha y Lance")) {
+                                    esperar = false;
+                                    if (result >= 20) {// 80%
+                                        flujo_salida.writeUTF("vas a morir en el frente");
+                                        System.out.println(nombre + " Nota mental: consegi engañar a Lance cree que ira al frente");
+                                    } else { // 20%
+                                        flujo_salida.writeUTF("no consegi engañarte");
+                                        System.out.println(nombre + " Nota mental: NO CONSEIGI ENGAÑARLO NOOO NOO LA @#~&% $$ #~$%@ $$ @##$$$@~&%");
+                                    }
+                                } else {
+                                    // Lance no está: cerramos el socket sin enviar nada y reintentamos
+                                    esperar = true;
+                                    System.out.println(nombre + " Lance no está en el castillo, reintentando...");
+                                    try { Thread.sleep(2000); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
+                                }
+                                skCliente.close();
+
+                            } catch (IOException e) {
+                                System.out.println(nombre + " error en el socket");
+                                System.out.println(e.getMessage());
                             }
-
-                        } catch (IOException e){
-                            System.out.println(nombre + " error en el socket");
-                            System.out.println(e.getMessage());
                         }
 
                     }

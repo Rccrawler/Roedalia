@@ -103,6 +103,19 @@ public class CustodioDelFuegoSecreto {
         elisabethaThread.start();
         LinceDuLac_Dion_Thread.start();
 
+        while (true) {
+            try {
+                Thread.sleep(1000); // Pausa el hilo
+            } catch (InterruptedException e) {
+                System.err.println("El hilo fue interrumpido: " + e.getMessage());
+            }
+
+            if (LinceDuLac_Dion_.isCierreProgrma() && elisabetha.isCierreProgrma()) {
+                System.out.println("Lance du Lac ha escapado con Elisabetha y podrán ser felices y comer perdices");
+                System.exit(0); // cuando este todo canbiar por otro qeu balla cerrando todo poco a poco balla terminando cada hilo, pero por ahora es un cierre total
+            }
+        }
+
     }
 
     public static void titular (){

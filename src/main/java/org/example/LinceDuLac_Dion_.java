@@ -19,7 +19,7 @@ public class LinceDuLac_Dion_ implements Runnable {
 
     // hojo revisar que cuando tiene que vigilar el porton no entre con su nonbre sino con el testo: caballero vigilante si no podra trabajar
 
-    private int NivelDeChispa; // cuidado no se prenda fuego
+    private int NivelDeChispa = 0; // cuidado no se prenda fuego
     private boolean ConocioElisabetha = false;
     private String nombre = "Lince Dulac dion";
     private boolean ofensaRecivida;
@@ -27,10 +27,26 @@ public class LinceDuLac_Dion_ implements Runnable {
     private final List<String> companeros = Arrays.asList("Diego", "Aldric", "Cayo", "Faelan");
     private final String[] lugaresGuardia = {"Portón Norte", "El Descanso del Guerrero"};
 
+    private boolean CierreProgrma = false; // para notificar al main el cierre del programa ojo peligrosisimo
+
+    public boolean isCierreProgrma() {
+        return CierreProgrma;
+    }
+
     @Override
     public void run() {
         while (true) {
+
+            if (this.NivelDeChispa < 100) {
+                revisarCastilloAlquimista();
+            }
+
             int accion = random.nextInt(3); // 0 hablar, 1 duelo, 2 guardia
+
+            if (this.NivelDeChispa >= 100) {
+                accion = 3; // ir al porton norte por eli
+            }
+
             switch (accion) { // accion
                 case 0:
                     atenderCaballero();
@@ -41,16 +57,107 @@ public class LinceDuLac_Dion_ implements Runnable {
                 case 2:
                     realizarGuardia();
                     break;
-                default:
+                case 3:
+                    irAlPortonNortePorEli();
                     break;
             }
             try {
-                Thread.sleep(2000 + random.nextInt(2000));
+                Thread.sleep(800 + random.nextInt(2000));
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 return;
             }
         }
+    }
+
+    private void irAlPortonNortePorEli() {
+        while (true) {
+            try {
+                Socket skCliente = new Socket("localhost", 5001);
+                DataOutputStream flujo_salida = new DataOutputStream(skCliente.getOutputStream());
+                DataInputStream flujo_entrada = new DataInputStream(skCliente.getInputStream());
+
+                flujo_salida.writeUTF("caballero enmascarado");
+
+                try {
+                    flujo_salida.writeUTF("hola Eli no puedo estar un segundo mas sin verte por favor escapemonos Eli a un lugar donde no haya portones ni castillos ni nada solo tu y yo Eli");
+                    String respuesta = flujo_entrada.readUTF();
+                    System.out.println(nombre + " respuesta de Eli: " + respuesta);
+                    break;
+                } catch (IOException e) {
+                    System.out.println(nombre + " se perdio la conexion con el porton, reintentando...");
+                }
+
+            } catch (IOException e) {
+                System.out.println(nombre + " No puede entrar por eli pero lo boy a intentar sin piedad NOOO ME REEEENNDIRE: " + e.getMessage());
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e2) {
+                    Thread.currentThread().interrupt();
+                    return;
+                }
+            }
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+
+        // notificar al main el cierre del programa
+        this.CierreProgrma = true;
+
+        while (true) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+    }
+
+    private void revisarCastilloAlquimista() {
+        Socket skCliente = null;
+        DataOutputStream flujo_salida = null;
+        DataInputStream flujo_entrada = null;
+
+        try {
+            skCliente = new Socket("localhost", 5000);
+            flujo_salida = new DataOutputStream(skCliente.getOutputStream());
+            flujo_entrada = new DataInputStream(skCliente.getInputStream());
+
+            flujo_salida.writeUTF(nombre);
+
+            Thread.sleep(1800);
+
+            String mensaje = null;
+            mensaje = flujo_entrada.readUTF();
+
+            if (mensaje.equals("Te engañe")){
+                System.out.println(nombre + " El alquimista me engaño --------------------------------------");
+                this.NivelDeChispa = this.NivelDeChispa - 20;
+                if(this.NivelDeChispa < 0){ // se puede mejorar pero funciona
+                    this.NivelDeChispa = 0;
+                }
+                System.out.println(nombre + " la chispa actual es " + NivelDeChispa);
+            } else if (mensaje.equals("vas a morir en el frente")) {
+                System.out.println(nombre + " El alquimista me dijo que morire en el frente ---------------------------");
+                this.NivelDeChispa = this.NivelDeChispa - 30;
+                if(this.NivelDeChispa < 0){ // se puede mejorar pero funciona
+                    this.NivelDeChispa = 0;
+                }
+                System.out.println(nombre + " la chispa actual es " + NivelDeChispa);
+            }
+
+        } catch (IOException e) {
+            System.out.println(nombre + " No pude revisar el castillo por el alquimista: " + e.getMessage());
+        } catch (InterruptedException e) {
+            System.out.println(nombre + " No pude revisar el castillo por el alquimista: " + e.getMessage());
+        }
+
     }
 
     private void realizarGuardia() {
@@ -79,12 +186,12 @@ public class LinceDuLac_Dion_ implements Runnable {
                     System.out.println(nombre + " " + resultado);
 
                 } catch (IOException e) {
-                    System.err.println(nombre + " No pude vigilar en el porton: " + e.getMessage());
+                    System.out.println(nombre + " No pude vigilar en el porton: " + e.getMessage());
                 }
                 try {
                     Thread.sleep(5000); // Pausa el hilo actual por 6 segundos
                 } catch (InterruptedException e) {
-                    System.err.println(nombre + " El hilo fue interrumpido: " + e.getMessage());
+                    System.out.println(nombre + " El hilo fue interrumpido: " + e.getMessage());
                 }
                 break;
             case "El Descanso del Guerrero":
@@ -106,17 +213,26 @@ public class LinceDuLac_Dion_ implements Runnable {
                     String estaEli = flujo_entrada.readUTF();
 
                     if (estaEli.equals("true")){
+                        if (this.ConocioElisabetha == false) {
+                            this.NivelDeChispa = this.NivelDeChispa + 75;
+                            this.ConocioElisabetha = true;
+                            System.out.println(nombre + " se a inicado una chispa inapagable");
+                            System.out.println(nombre + " que es eso que ven mis ojos que es mejor que el queso Parmigiano Reggiano");
+                        }else {
+                            this.NivelDeChispa = this.NivelDeChispa + 10;
+                            System.out.println(nombre + " se a fortalecido la chispa al ver a Elisabetha");
+                        }
 
                     }else {
-                        System.out.println(nombre + "Acabo mi turno de vigilar");
+                        System.out.println(nombre + "Acabo mi turno de vigilancia");
                     }
 
                 } catch (UnknownHostException e) {
-                    throw new RuntimeException(e);
+                    System.out.println(nombre + " No pude conectar con el servidor de la taberna: " + e.getMessage());
                 } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+                    System.out.println(nombre + " No pude conectar con el servidor de la taberna: " + e.getMessage());
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    System.out.println(nombre + " No pude conectar con el servidor de la taberna: " + e.getMessage());
                 }
 
                 break;

@@ -19,6 +19,12 @@ public class Elisabetha implements Runnable {
     private int NivelDeChispa; // cuidado no se prenda fuego
     private boolean ConocioLance = false;
 
+    private boolean CierreProgrma = false; // para notificar al main el cierre del programa ojo peligrosisimo
+
+    public boolean isCierreProgrma() {
+        return CierreProgrma;
+    }
+
     public Elisabetha(){
     }
 

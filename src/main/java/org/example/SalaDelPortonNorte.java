@@ -12,6 +12,12 @@ public class SalaDelPortonNorte {
 
     private ArrayList<Carreta> carretas = new ArrayList<>();
 
+    private boolean damaTapada = false;
+    private boolean caballeroEnmascarado = false;
+    private String LanceFrase = "";
+    private String EliFrase = "";
+
+
     private String[] productosNoPermitidos = {"Queso sin fermentar", "Leche cruda"};
     private String[] nombres = {
             "Juan", "Ana", "Carlos", "Lucía", "Pedro",
@@ -174,6 +180,7 @@ public class SalaDelPortonNorte {
             carretas.add(new Carreta(nombre));
         }
     }
+
     public synchronized boolean eliminarCarretaPorNombre(String nombre){
         for (int i = 0; i < carretas.size(); i++) {
             if (carretas.get(i).getNombre().equals(nombre)) {
@@ -183,7 +190,6 @@ public class SalaDelPortonNorte {
         }
         return false;
     }
-
 
     public synchronized void hacerVigilancia(DataInputStream flujoEntrada, DataOutputStream flujoSalida) {
         String caballero;
@@ -237,5 +243,53 @@ public class SalaDelPortonNorte {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public synchronized void SalaEscondidaLance(DataOutputStream flujoSalidaLan, DataInputStream flujoEntradaLan) {
+        this.caballeroEnmascarado = true;
+
+        try {
+            this.LanceFrase = flujoEntradaLan.readUTF();
+        } catch (IOException e) {
+            return;
+        }
+
+        while (this.EliFrase.equals("")) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+
+        try {
+            flujoSalidaLan.writeUTF(this.EliFrase);
+            this.LanceFrase = "";
+            this.EliFrase = "";
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    public synchronized void SalaEscondidaEli(DataOutputStream flujoSalidaEli, DataInputStream flujoEntradaEli) {
+        this.damaTapada = true;
+
+        try {
+            this.EliFrase = flujoEntradaEli.readUTF();
+        } catch (IOException e) {
+            return;
+        }
+
+        notifyAll();
+
+        try {
+            flujoSalidaEli.writeUTF(this.LanceFrase);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

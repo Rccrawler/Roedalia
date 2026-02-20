@@ -7,6 +7,9 @@ import java.io.IOException;
 public class SalaCastillo {
     private boolean elisabethaPresente = false;
     private boolean alquimistaPresente = false;
+    private boolean lancePresente = false;
+
+    private String conbersacionAl = "";
 
     private String mensajeRumor = "";
 
@@ -62,10 +65,65 @@ public class SalaCastillo {
         }
     }
 
-    public synchronized void esperarReunionUrguente() { // esto es para los alquimistas
+    public synchronized void esperarReunionUrguente(DataOutputStream salidaAl, DataInputStream entradaAl) { // esto es para los alquimistas
         this.alquimistaPresente = true;
+        this.conbersacionAl = "";
+
+        String mensaje = "";
+
+        if (this.elisabethaPresente && this.lancePresente){
+            mensaje = "Elisabetha y Lance";
+        } else if (elisabethaPresente){
+            mensaje = "Elisabetha";
+        } else if (lancePresente){
+            mensaje = "Lance";
+        } else {
+            mensaje = "Nadie";
+        }
+
+        try {
+            salidaAl.writeUTF(mensaje);
+            // Solo leer la respuesta si Lance está presente; si no, el cliente cierra el socket sin enviar nada
+            if (mensaje.equals("Lance") || mensaje.equals("Elisabetha y Lance")) {
+                this.conbersacionAl = entradaAl.readUTF();
+                notifyAll(); // despertar a Lance para que recoja el mensaje
+            }
+            this.alquimistaPresente = false;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         // demas codigo para pasarle la pocion a eli
+    }
+
+
+    public synchronized void revisarAlquimista(DataOutputStream flujoSalidaLa, DataInputStream flujoEntradaLa) {
+        String notificacion = "";
+        lancePresente = true;
+        notifyAll(); // avisar al alquimista de que Lance ha llegado
+
+        try {
+            wait(1800);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (this.conbersacionAl != "") {
+            try {
+                flujoSalidaLa.writeUTF(this.conbersacionAl);
+                this.conbersacionAl = "";
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            lancePresente = false;
+        } else {
+            try {
+                flujoSalidaLa.writeUTF("Nade me espera");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            lancePresente = false;
+        }
 
     }
 }

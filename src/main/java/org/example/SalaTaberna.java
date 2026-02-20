@@ -17,20 +17,21 @@ public class SalaTaberna {
 
     public synchronized void esperarLanze(DataOutputStream salidaLan, DataInputStream entradaLan){
 
-        if (this.elisabethaPresente = true){
+        this.lancePresente = true;
+        if (this.elisabethaPresente) {
             try {
                 salidaLan.writeUTF("true");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }else {
+        } else {
             try {
                 salidaLan.writeUTF("false");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-
+        this.lancePresente = false;
     }
 
 

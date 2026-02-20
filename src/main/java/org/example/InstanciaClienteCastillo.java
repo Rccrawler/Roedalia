@@ -27,8 +27,10 @@ public class InstanciaClienteCastillo implements Runnable {
             if (quienEs.equals("Elisabetha")) {
                 sala.notificarLlegada(flujo_salida, flujo_entrada);
 
-            }else if(quienEs.equals("Theobald") || quienEs.equals("Ignatius")){
-                sala.esperarReunionUrguente();
+            }else if(quienEs.equals("Theobald") || quienEs.equals("Ignatius")) {
+                sala.esperarReunionUrguente(flujo_salida, flujo_entrada);
+            }else if(quienEs.equals("Lince Dulac dion")) {
+                sala.revisarAlquimista(flujo_salida, flujo_entrada);
             } else {
                 sala.esperarAelisabetha(flujo_salida, flujo_entrada);
             }
